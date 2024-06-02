@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { BoxLineGeometry } from 'three/addons/geometries/BoxLineGeometry.js';
 
-import { _physics } from '/js/physics.js';
+import { _physics } from '/tankers/js/physics.js';
 let _consoleOn = false
 let _scene = {
 	// SCENE CREATION

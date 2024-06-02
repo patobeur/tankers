@@ -1,7 +1,7 @@
 
 "use strict";
 import * as THREE from "three";
-import { _scene, } from '/js/scene.js'
+import { _scene, } from '/tankers/js/scene.js'
 
 let _player = {
 	initiated: false,

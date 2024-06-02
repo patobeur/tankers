@@ -1,9 +1,9 @@
 
 "use strict";
 import * as THREE from "three";
-import { _scene, } from '/js/scene.js'
-import { _physics } from '/js/physics.js';
-import { _player } from '/js/player.js';
+import { _scene, } from '/tankers/js/scene.js'
+import { _physics } from '/tankers/js/physics.js';
+import { _player } from '/tankers/js/player.js';
 import Stats from 'three/addons/libs/stats.module.js';
 let initWorld = () => {
 	let delta = 0;
