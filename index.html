@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+	<head>
+		<title>three.js physics</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="/assets/css/main.css">
+	</head>
+
+	<body>
+		<div id="instructions">
+			<h1>Tankers</h1>
+			Q D to rotate tank<br />
+			Z S to move forward and backward<br />
+			A E to move left and right<br />
+			Mousemove to rotate turret<br />
+			Mousewheel to dolly in/out<br />
+			Spacebar : change ammo model.<br />
+			Left mouse clic to fire an ammo !<br />
+		</div>
+		<script src="/node_modules/three/examples/jsm/libs/ammo.wasm.js"></script>
+		<script type="importmap">
+		{
+          "imports": {
+            "three": "/node_modules/three/build/three.module.js",
+            "three/addons/": "/node_modules/three/examples/jsm/"
+          }
+        }
+      	</script>
+		<script type="module" src="./js/index.js"></script>
+	</body>
+
+</html>
