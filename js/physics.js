@@ -122,7 +122,7 @@ let _modelsPhysicsAuto = {
 		mass: 0,
 		mesh: undefined,
 		shape: undefined,
-		color: 0xffff00,
+		color: 0x662626,
 		// transparent: true,
 		// opacity: 0.8,
 		shininess: 100,
@@ -143,7 +143,7 @@ let _modelsPhysicsAuto = {
 		mass: 0,
 		mesh: undefined,
 		shape: undefined,
-		color: 0xffff00,
+		color: 0x252566,
 		// transparent: true,
 		// opacity: 0.8,
 		shininess: 100,
@@ -154,27 +154,27 @@ let _modelsPhysicsAuto = {
 			restitution: 0
 		}
 	},
-	'wall4': {
-		name: "wall4",
-		shapeType: 'btBoxShape',
-		btBoxShape: { x: 20, y: 2, z: .5 },
-		pos: { x: 0, y: 1, z: -9.75 },
-		inertia: { x: 0, y: 0, z: 0 },
-		quat: { x: 0, y: 0, z: 0, w: 1 },
-		mass: 0,
-		mesh: undefined,
-		shape: undefined,
-		color: 0xffff00,
-		// transparent: true,
-		// opacity: 0.8,
-		shininess: 100,
-		castShadow: true,
-		receiveShadow: true,
-		physics: {
-			friction: 1,
-			restitution: 0
-		}
-	},
+	// 'wall4': {
+	// 	name: "wall4",
+	// 	shapeType: 'btBoxShape',
+	// 	btBoxShape: { x: 20, y: 2, z: .5 },
+	// 	pos: { x: 0, y: 1, z: -9.75 },
+	// 	inertia: { x: 0, y: 0, z: 0 },
+	// 	quat: { x: 0, y: 0, z: 0, w: 1 },
+	// 	mass: 0,
+	// 	mesh: undefined,
+	// 	shape: undefined,
+	// 	color: 0xffff00,
+	// 	// transparent: true,
+	// 	// opacity: 0.8,
+	// 	shininess: 100,
+	// 	castShadow: true,
+	// 	receiveShadow: true,
+	// 	physics: {
+	// 		friction: 1,
+	// 		restitution: 0
+	// 	}
+	// },
 }
 let _modelsPhysics = {
 	'playerBox': {
@@ -189,7 +189,7 @@ let _modelsPhysics = {
 		shape: undefined,
 		color: 0xffff00,
 		transparent: true,
-		opacity: 0.5,
+		opacity: 0,
 		shininess: 0,
 		castShadow: false,
 		receiveShadow: false,
@@ -430,9 +430,9 @@ let _physics = {
 				shapeType: 'btSphereShape',
 				btSphereShape: new THREE.Vector3(0.5, 32, 32),
 				pos: new THREE.Vector3(
-					(Math.random() - 0.5) * 5,
-					hauteurDeDepart + Math.random() * 5,
-					(Math.random() - 0.5) * 5
+					(Math.random() * 40) - 20,
+					hauteurDeDepart + Math.random() * 10,
+					(Math.random() * 40) - 20
 				),
 				inertia: { x: 0, y: 0, z: 0 },
 				quat: new THREE.Quaternion(0, 0, 0, 1).normalize(),
@@ -463,9 +463,9 @@ let _physics = {
 				shapeType: 'btBoxShape',
 				btBoxShape: { x: 1, y: 1, z: 1 },
 				pos: new THREE.Vector3(
-					(Math.random() - 0.5) * 5,
-					hauteurDeDepart + Math.random() * 5,
-					(Math.random() - 0.5) * 5
+					(Math.random() * 40) - 20,
+					hauteurDeDepart + Math.random() * 10,
+					(Math.random() * 40) - 20
 				),
 				inertia: { x: 0, y: 0, z: 0 },
 				quat: new THREE.Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),
@@ -487,9 +487,8 @@ let _physics = {
 			_scene.scene.add(config.mesh);
 		}
 	},
-	addRandomPlat: function (_scene) {
+	addRandomPlat: function (_scene, max = 10) {
 		console.log('addRandomPlat')
-		let max = 10;
 		let hauteurDeDepart = 5;
 		for (let index = 0; index < max; index++) {
 			let config = {
@@ -497,9 +496,9 @@ let _physics = {
 				shapeType: 'btBoxShape',
 				btBoxShape: { x: 1, y: .25, z: 1 },
 				pos: new THREE.Vector3(
-					(Math.random() - 0.5) * 5,
-					hauteurDeDepart + Math.random() * 5,
-					(Math.random() - 0.5) * 5
+					(Math.random() * 40) - 20,
+					hauteurDeDepart + Math.random() * 10,
+					(Math.random() * 40) - 20
 				),
 				inertia: { x: 0, y: 0, z: 0 },
 				quat: new THREE.Quaternion(Math.random(), Math.random(), Math.random(), Math.random()).normalize(),

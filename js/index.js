@@ -41,9 +41,9 @@ let initWorld = () => {
 
 		_player.init(_physics, _GLTFLoader)
 
-		// _physics.addRandomPlat(_scene, 20)
-		// _physics.addRandomBox(_scene, 20)
-		// _physics.addRandomSphere(_scene, 20)
+		_physics.addRandomPlat(_scene, 30)
+		_physics.addRandomBox(_scene, 30)
+		_physics.addRandomSphere(_scene, 30)
 
 		_scene.renderer.render(_scene.scene, _scene.camera);
 		_OrbitControls.init(_scene, _player)

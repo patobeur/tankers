@@ -112,23 +112,33 @@ let _TextureLoader = {
 	callback: () => { if (this._consoleOn) console.log('no call back function for _TextureLoader') },
 	textures: {},
 	counter: 0,
+	filesCounter: 0,
 	textureLoader: new THREE.TextureLoader(),
-	files: [
-		{ name: 'road2', path: '/assets/textures/', fileName: 'road2.jpg' },
-		{ name: 'sky', path: '/assets/textures/', fileName: 'sky.jpg' },
-	],
+	files2: {
+		'floor': { name: 'floor', path: '/assets/textures/', fileName: 'road4.jpg', w: 1572, h: 899 },
+		'sky': { name: 'sky', path: '/assets/textures/', fileName: 'fond.jpg' },
+	},
 	init: function (root = '', callbackFunction = this.callback) {
 		this.root = root
 		this.callbackFunction = callbackFunction
 		this.counter = 0
 		// Chargement des textures pour chaque objet
-		this.files.forEach(file => {
-			this.addToStack(file)
-		});
+		for (const key in this.files2) {
+			if (Object.hasOwnProperty.call(this.files2, key)) {
+				const file = this.files2[key];
+				console.log('ok')
+				this.addToStack(file)
+
+			}
+			this.filesCounter++
+		}
+		// this.files.forEach(file => {
+		// 	this.addToStack(file)
+		// });
 	},
 	checkEnd: function () {
-		if (this.counter === this.files.length) {
-			console.log('_TextureLoader', 'ok', this.files.length + ' files loaded...')
+		if (this.counter === this.filesCounter) {
+			console.log('_TextureLoader', 'ok', this.filesCounter + ' files loaded...')
 			this.callbackFunction('_TextureLoader ok')
 		}
 	},

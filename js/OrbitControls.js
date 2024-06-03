@@ -33,9 +33,9 @@ let _OrbitControls = {
 
 		_Player.playerTurret.add(this.camera)
 
-		this.camera.position.z = -8;
+		this.camera.position.z = -14;
 		this.camera.rotation.z = -Math.PI
-		this.camera.position.y = 2;
+		this.camera.position.y = 6;
 		this.camera.lookAt(new THREE.Vector3(0, 0, 5))
 		this.active = true
 

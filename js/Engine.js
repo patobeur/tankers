@@ -6,12 +6,13 @@ let _Engine = {
 		max: 20,
 	},
 	GEARS: [
-		{ name: 'FAST_BACKWARD', power: -2 },
+		{ name: 'FAST_BACKWARD', power: -3 },
 		{ name: 'SLOW_BACKWARD', power: -1 },
 		{ name: 'STOPPED', power: 0 },
 		{ name: 'SLOW_FORWARD', power: 1 },
-		{ name: 'FAST_FORWARD', power: 2 },
-		{ name: 'VERY_FAST_FORWARD', power: 3 }
+		{ name: 'FAST_FORWARD', power: 2.5 },
+		{ name: 'VERY_FAST_FORWARD', power: 4 },
+		{ name: 'VERY_VERY_FAST_FORWARD', power: 7 }
 	],
 	init: function (playerTank) {
 		this.max = this.GEARS.length - 1

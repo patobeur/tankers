@@ -189,14 +189,7 @@ let _player = {
 		}
 
 
-		// Calculer les nouvelles rotations et positions
-		if (this.actions.turnLeft || this.actions.turnRight) {
-			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * 2.0;
-			let axis = new THREE.Vector3(0, 1, 0);
-			quaternion.setFromAxisAngle(axis, angle);
-			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
-			// console.log((this.actions.turnLeft ? 'tourner a droite' : 'tourner a gauche'))
-		}
+		let vitesse = _Engine.get_currentPower()
 
 		// Calculer la direction de déplacement
 		let forward = new THREE.Vector3(0, 0, 1);
@@ -211,15 +204,14 @@ let _player = {
 				_Engine.powerDown()
 			}
 		}
-		let vitesse = _Engine.get_currentPower()
 		if (vitesse.power !== 0) {
 			this.inputVelocity.add(forward.multiplyScalar(vitesse.power * deltaTime));
 		}
 
+
 		let right = new THREE.Vector3(1, 0, 0);
 		right.applyQuaternion(cube.quaternion);
 		right.normalize();
-
 		// na pas enlever
 		if (this.actions.moveLeft) {
 			this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
@@ -228,6 +220,15 @@ let _player = {
 			this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
 		}
 
+		// Calculer les nouvelles rotations et positions
+		if (this.actions.turnLeft || this.actions.turnRight) {
+			let sens = vitesse.power > 0 ? 1 : -1
+			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * 2.0 * sens;
+			let axis = new THREE.Vector3(0, 1, 0);
+			quaternion.setFromAxisAngle(axis, angle);
+			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
+			// console.log((this.actions.turnLeft ? 'tourner a droite' : 'tourner a gauche'))
+		}
 
 
 

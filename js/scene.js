@@ -126,6 +126,24 @@ let _scene = {
 		console.log(config)
 		_physics.set_MeshAndPhysics(config, _scene)
 		_scene.scene.add(config.mesh)
+
+
+
+		const material = new THREE.MeshPhongMaterial({ map: _TextureLoader.textures['floor'].map });
+		const geometry = new THREE.PlaneGeometry(_TextureLoader.files2['floor'].w * 0.10, _TextureLoader.files2['floor'].h * 0.10);
+		const plane = new THREE.Mesh(geometry, material);
+		plane.position.y = 0.001
+		plane.receiveShadow = true
+		plane.rotation.x = - Math.PI / 2
+
+		_scene.scene.add(plane)
+
+
+
+
+
+
+
 	},
 	init_environment: function (what) {
 		console.log('init_environment', what)
