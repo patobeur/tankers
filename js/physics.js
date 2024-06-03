@@ -91,27 +91,27 @@ let _modelsPhysicsAuto = {
 		}
 
 	},
-	'wall1': {
-		name: "wall1",
-		shapeType: 'btBoxShape',
-		btBoxShape: { x: 20, y: 2, z: .5 },
-		pos: { x: 0, y: 1, z: 9.75 },
-		inertia: { x: 0, y: 0, z: 0 },
-		quat: { x: 0, y: 0, z: 0, w: 1 },
-		mass: 0,
-		mesh: undefined,
-		shape: undefined,
-		color: 0xffff00,
-		// transparent: true,
-		// opacity: 0.8,
-		shininess: 100,
-		castShadow: true,
-		receiveShadow: true,
-		physics: {
-			friction: 1,
-			restitution: 0
-		}
-	},
+	// 'wall1': {
+	// 	name: "wall1",
+	// 	shapeType: 'btBoxShape',
+	// 	btBoxShape: { x: 20, y: 2, z: .5 },
+	// 	pos: { x: 0, y: 1, z: 9.75 },
+	// 	inertia: { x: 0, y: 0, z: 0 },
+	// 	quat: { x: 0, y: 0, z: 0, w: 1 },
+	// 	mass: 0,
+	// 	mesh: undefined,
+	// 	shape: undefined,
+	// 	color: 0xffff00,
+	// 	// transparent: true,
+	// 	// opacity: 0.8,
+	// 	shininess: 100,
+	// 	castShadow: true,
+	// 	receiveShadow: true,
+	// 	physics: {
+	// 		friction: 1,
+	// 		restitution: 0
+	// 	}
+	// },
 	'wall2': {
 		name: "wall2",
 		shapeType: 'btBoxShape',
@@ -180,7 +180,7 @@ let _modelsPhysics = {
 	'playerBox': {
 		name: "playerBox",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1.4, y: 1, z: 1.8 },
+		btBoxShape: { x: 1.5, y: 1.45, z: 1.7 },
 		pos: { x: 0, y: 1, z: 0 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
@@ -189,10 +189,10 @@ let _modelsPhysics = {
 		shape: undefined,
 		color: 0xffff00,
 		transparent: true,
-		opacity: 0.9,
-		shininess: 100,
-		castShadow: true,
-		receiveShadow: true,
+		opacity: 0.5,
+		shininess: 0,
+		castShadow: false,
+		receiveShadow: false,
 		physics: {
 			friction: 1,
 			restitution: 0
@@ -201,7 +201,7 @@ let _modelsPhysics = {
 	'floorOne': {
 		name: "FloorOne",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 20, y: .25, z: 20 },
+		btBoxShape: { x: 200, y: .25, z: 200 },
 		pos: { x: 0, y: -.125, z: 0 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
@@ -294,7 +294,7 @@ let _physics = {
 		markerMesh.castShadow = true;
 		markerMesh.receiveShadow = true;
 		mesh.add(markerMesh)
-		markerMesh.position.y = (scale.y / 2) + (.1);
+		markerMesh.position.y = (scale.y / 2) + (.15);
 	},
 	_transform: function (position, quaternion) {
 		let transform = new Ammo.btTransform();

@@ -1,7 +1,7 @@
 "use strict";
 import * as THREE from "three";
 import { BoxLineGeometry } from 'three/addons/geometries/BoxLineGeometry.js';
-
+import { _GLTFLoader, _TextureLoader } from '/js/loaders.js';
 import { _physics } from '/js/physics.js';
 let _consoleOn = false
 let _scene = {
@@ -13,13 +13,11 @@ let _scene = {
 	},
 	// CAMERA
 	set_camera: function () {
-		this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
-		this.camera.position.y = 5
-		this.camera.position.z = -8
+		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.camera.name = 'first'
+		this.camera.lookAt(new THREE.Vector3(0, 1, 0))
 		this.camera2 = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.camera2.name = 'secour'
-		this.camera.lookAt(new THREE.Vector3(0, 1, 0))
 	},
 	// RENDERER
 	set_renderer: function () {
@@ -31,7 +29,11 @@ let _scene = {
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+		this.renderer.autoClear = true
+		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+		this.renderer.toneMappingExposure = 1
 		this.renderer.setClearColor(0x000010, 1.0);
+		this.renderer.shadowMap.enabled = true
 		document.body.appendChild(this.renderer.domElement);
 	},
 	// ROOM (décor)
@@ -100,6 +102,14 @@ let _scene = {
 		this.set_roomGrid()
 		this.set_sun(true)
 		this.set_lights()
+
+
+
+		this.init_floor('ok')
+		this.init_decor('ok')
+		this.init_environment('ok')
+
+
 		this.scene.add(this.SUN.starter());
 		// ------------------------
 		// Handle window resizing
@@ -113,8 +123,19 @@ let _scene = {
 	init_floor: function (what) {
 		console.log('init_floor', what)
 		let config = _physics.modelsPhysics.floorOne
+		console.log(config)
 		_physics.set_MeshAndPhysics(config, _scene)
 		_scene.scene.add(config.mesh)
+	},
+	init_environment: function (what) {
+		console.log('init_environment', what)
+		const textureEquirec = _TextureLoader.textures['sky'].map
+		textureEquirec.mapping = THREE.EquirectangularReflectionMapping
+		textureEquirec.encoding = THREE.sRGBEncoding
+		_scene.scene.environment = textureEquirec
+		_scene.scene.background = textureEquirec
+
+
 	},
 	init_decor: function (what) {
 		console.log('init_decor', what)
