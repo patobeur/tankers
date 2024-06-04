@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { _GLTFLoader, _TextureLoader } from '/js/loaders.js';
 
 const DEFAULT_GROUP = 1 << 0; // 1
 const DEFAULT_MASK = 0xFFFF;  // Collide with everything
@@ -9,16 +10,14 @@ let _modelsPhysicsAuto = {
 	'plot1': {
 		name: "plot1",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1, y: 1, z: 1 },
-		pos: { x: -5, y: 0.5, z: -5 },
+		btBoxShape: { x: 1, y: 2, z: 1 },
+		pos: { x: -5, y: 1, z: -5 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
 		mass: 0,
 		mesh: undefined,
 		shape: undefined,
 		color: 0xff0000,
-		// transparent: true,
-		// opacity: 0.8,
 		shininess: 100,
 		castShadow: true,
 		receiveShadow: true,
@@ -30,8 +29,8 @@ let _modelsPhysicsAuto = {
 	'plot2': {
 		name: "plot2",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1, y: 1, z: 1 },
-		pos: { x: -5, y: 0.5, z: 5 },
+		btBoxShape: { x: 1, y: 2, z: 1 },
+		pos: { x: -5, y: 1, z: 5 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
 		mass: 0,
@@ -51,8 +50,8 @@ let _modelsPhysicsAuto = {
 	'plot3': {
 		name: "plot3",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1, y: 1, z: 1 },
-		pos: { x: 5, y: 0.5, z: -5 },
+		btBoxShape: { x: 1, y: 2, z: 1 },
+		pos: { x: 5, y: 1, z: -5 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
 		mass: 0,
@@ -72,8 +71,8 @@ let _modelsPhysicsAuto = {
 	'plot4': {
 		name: "plot4",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1, y: 1, z: 1 },
-		pos: { x: 5, y: 0.5, z: 5 },
+		btBoxShape: { x: 1, y: 2, z: 1 },
+		pos: { x: 5, y: 1, z: 5 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
 		mass: 0,
@@ -177,31 +176,11 @@ let _modelsPhysicsAuto = {
 	// },
 }
 let _modelsPhysics = {
-	'playerBox': {
-		name: "playerBox",
+	'groundZero': {
+		name: "groundZero",
 		shapeType: 'btBoxShape',
-		btBoxShape: { x: 1.5, y: 1.45, z: 1.7 },
-		pos: { x: 0, y: 1, z: 0 },
-		inertia: { x: 0, y: 0, z: 0 },
-		quat: { x: 0, y: 0, z: 0, w: 1 },
-		mass: 3,
-		mesh: undefined,
-		shape: undefined,
-		color: 0xffff00,
-		transparent: true,
-		opacity: 0,
-		shininess: 0,
-		castShadow: false,
-		receiveShadow: false,
-		physics: {
-			friction: 1,
-			restitution: 0
-		}
-	},
-	'floorOne': {
-		name: "FloorOne",
-		shapeType: 'btBoxShape',
-		btBoxShape: { x: 200, y: .25, z: 200 },
+		mapFile: _TextureLoader.files2['floor'],
+		btBoxShape: { x: _TextureLoader.files2['floor'].w * 0.10, y: .25, z: _TextureLoader.files2['floor'].h * 0.10 },
 		pos: { x: 0, y: -.125, z: 0 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },
@@ -285,17 +264,17 @@ let _physics = {
 	// ---------------------------------------------------
 	// MESHS CREATION
 	// ---------------------------------------------------
-	add_MarkerTo: (mesh, scale, name = 'vide') => {
-		const markerGeometry = new THREE.BoxGeometry(.2, .2, .2)
-		const markerMaterial = new THREE.MeshPhongMaterial({ color: ((name === 'vide') ? 0x000000 : 0x00ff00) })
-		let markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
-		markerMesh.name = 'marker'
-		markerMesh.rotation.y = Math.PI / 4
-		markerMesh.castShadow = true;
-		markerMesh.receiveShadow = true;
-		mesh.add(markerMesh)
-		markerMesh.position.y = (scale.y / 2) + (.15);
-	},
+	// add_MarkerTo: (mesh, scale, name = 'vide') => {
+	// 	const markerGeometry = new THREE.BoxGeometry(.2, .2, .2)
+	// 	const markerMaterial = new THREE.MeshPhongMaterial({ color: ((name === 'vide') ? 0x000000 : 0x00ff00) })
+	// 	let markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
+	// 	markerMesh.name = 'marker'
+	// 	markerMesh.rotation.y = Math.PI / 4
+	// 	markerMesh.castShadow = true;
+	// 	markerMesh.receiveShadow = true;
+	// 	mesh.add(markerMesh)
+	// 	markerMesh.position.y = (scale.y / 2) + (.15);
+	// },
 	_transform: function (position, quaternion) {
 		let transform = new Ammo.btTransform();
 		transform.setIdentity();
@@ -317,6 +296,9 @@ let _physics = {
 	// MESHS CREATION
 	// ---------------------------------------------------
 	set_MeshAndPhysics: function (config, _scene) {
+		// Log for debugging
+		// console.log('--------------------------------');
+		// console.log('Setting mesh and physics for:', config.name);
 		let group = config.group ?? DEFAULT_GROUP
 		let mask = config.mask ?? DEFAULT_MASK
 
@@ -325,42 +307,63 @@ let _physics = {
 		this.makeItPhysic(config, group, mask)
 		this[config.name] = config
 		// _scene.scene.add(config.mesh)
+		// Log for debugging
+		// console.log('Mesh and physics set for:', config.name);
 	},
 	set_Mesh: function (config) {
 		let scale = config[config.shapeType]
 		let geometry = undefined
 		let material = undefined
+
 		switch (config.shapeType) {
 			case 'btBoxShape':
 				geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z)
-				material = new THREE.MeshPhongMaterial({
-					color: config.color ?? 0xffffff,
-					transparent: config.transparent ?? false,
-					opacity: config.opacity ?? 1,
-					shininess: config.shininess ?? 0,
-				})
+				// material = new THREE.MeshPhongMaterial({
+				// 	color: config.color ?? 0xffffff,
+				// 	transparent: config.transparent ?? false,
+				// 	opacity: config.opacity ?? 1,
+				// 	shininess: config.shininess ?? 0,
+				// })
 				break;
 			case 'btSphereShape':
 				geometry = new THREE.SphereGeometry(scale.x, scale.y, scale.z)
-				material = new THREE.MeshPhongMaterial({
-					color: config.color ?? 0xffffff,
-					transparent: config.transparent ?? false,
-					opacity: config.opacity ?? 1,
-					shininess: config.shininess ?? 0,
-				})
+				// material = new THREE.MeshPhongMaterial({
+				// 	color: config.color ?? 0xffffff,
+				// 	transparent: config.transparent ?? false,
+				// 	opacity: config.opacity ?? 1,
+				// 	shininess: config.shininess ?? 0,
+				// })
 				break;
 			default:
 				geometry = new THREE.BoxGeometry(scale.x, scale.y, scale.z)
-				material = new THREE.MeshPhongMaterial({
-					color: config.color ?? 0xffffff,
-					transparent: config.transparent ?? false,
-					opacity: config.opacity ?? 1,
-					shininess: config.shininess ?? 0,
-				})
+				// material = new THREE.MeshPhongMaterial({
+				// 	color: config.color ?? 0xffffff,
+				// 	transparent: config.transparent ?? false,
+				// 	opacity: config.opacity ?? 1,
+				// 	shininess: config.shininess ?? 0,
+				// })
 				break;
 		}
+		if (config.mapFile) {
+			material = new THREE.MeshPhongMaterial({
+				map: _TextureLoader.textures['floor'].map,
+				color: config.color ?? 0xffffff,
+				transparent: config.transparent ?? false,
+				opacity: config.opacity ?? 1,
+				shininess: config.shininess ?? 0,
+			})
+		}
+		else {
+			material = new THREE.MeshPhongMaterial({
+				color: config.color ?? 0xffffff,
+				transparent: config.transparent ?? false,
+				opacity: config.opacity ?? 1,
+				shininess: config.shininess ?? 0,
+			})
+		}
+
 		config.mesh = new THREE.Mesh(geometry, material);
-		this.add_MarkerTo(config.mesh, scale, 'vide');
+		// this.add_MarkerTo(config.mesh, scale, 'vide');
 	},
 	set_Shape: function (config) {
 		config.mesh.name = config.name
@@ -380,6 +383,7 @@ let _physics = {
 				config.shape = new Ammo.btSphereShape(scale.x);
 				break;
 			default:
+				console.log('DEFAULT ????', scale)
 				config.shape = new Ammo.btBoxShape(
 					new Ammo.btVector3(scale.x * 0.5, scale.y * 0.5, scale.z * 0.5)
 				);
@@ -388,7 +392,7 @@ let _physics = {
 	},
 	makeItPhysic: function (config, group = DEFAULT_GROUP, mask = DEFAULT_MASK) {
 		let pos = config.pos
-		let inertia = config.inertia
+		let inertia = config.inertia ?? { x: 0, y: 0, z: 0 }
 		let quat = this._quaternion(config.quat);
 
 		let mass = config.mass
@@ -402,7 +406,7 @@ let _physics = {
 		transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
 		let motionState = new Ammo.btDefaultMotionState(transform);
 		// ----
-		let localInertia = new Ammo.btVector3(0, 0, 0);
+		let localInertia = new Ammo.btVector3(inertia.x, inertia.y, inertia.z);
 		shape.calculateLocalInertia(mass, localInertia);
 		// ----
 		let rbInfo = new Ammo.btRigidBodyConstructionInfo(
@@ -440,8 +444,8 @@ let _physics = {
 				mesh: undefined,
 				shape: undefined,
 				color: Math.random() * 0xffffff,
-				transparent: true,
-				opacity: (Math.random() * .5) + .3,
+				transparent: false,
+				opacity: 1,//Math.random() * 1,
 				shininess: 100,
 				castShadow: true,
 				receiveShadow: true,
@@ -473,8 +477,8 @@ let _physics = {
 				mesh: undefined,
 				shape: undefined,
 				color: Math.random() * 0xffffff,
-				transparent: true,
-				opacity: (Math.random() * .5) + .3,
+				transparent: false,
+				opacity: 1,//Math.random() * 1,
 				shininess: 100,
 				castShadow: true,
 				receiveShadow: true,
@@ -506,8 +510,8 @@ let _physics = {
 				mesh: undefined,
 				shape: undefined,
 				color: Math.random() * 0xffffff,
-				transparent: true,
-				opacity: Math.random() * 1,
+				transparent: false,
+				opacity: 1,//Math.random() * 1,
 				shininess: Math.random() * 100,
 				castShadow: true,
 				receiveShadow: true,

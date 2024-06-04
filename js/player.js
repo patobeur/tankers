@@ -4,37 +4,22 @@ import * as THREE from "three";
 import { _scene, } from '/js/scene.js'
 import { _OrbitControls } from '/js/OrbitControls.js';
 import { _Engine } from '/js/Engine.js';
+import { _Shoot } from '/js/shoot.js';
 
 let _player = {
 	initiated: false,
-	config: undefined,
 	// ----------------
 	pointerLocked: true,
 	// ----------------
-	// ----------------
 	inputVelocity: new THREE.Vector3(),
-	inputRotationY: 0,
-	actions: {
-		ismooving: false,
-		rotating: false,
-		moveForward: false,
-		moveBackward: false,
-		moveLeft: false,
-		moveRight: false,
-		turnLeft: false,
-		turnRight: false,
-		jump: false,
-		isjumping: false
-	},
-
-	shootTypes: ['basic', 'basic_Lv2', 'basic_Lv3'],
-	shoot: false,
-	lastShootTime: 0, // Temps du dernier tir
-	shootCooldown: 0.6, // Délai minimum entre les tirs en secondes
-
+	actions: { ismooving: false, rotating: false, moveForward: false, moveBackward: false, moveLeft: false, moveRight: false, turnLeft: false, turnRight: false, jump: false, isjumping: false },
+	shootTypes: ['basic', 'basic2', 'basic3'],
 	currentShootIndex: 0,
-	isReversing: false,
-
+	shoot: false,
+	turnSpeed: 2.0,
+	stats: {
+		hp: 100
+	},
 	keyMap: {
 		KeyW: false,
 		KeyS: false,
@@ -44,10 +29,36 @@ let _player = {
 		KeyE: false,
 		Space: false,
 	},
+	config: {
+		name: "playerBox",
+		shapeType: 'btBoxShape',
+		btBoxShape: { x: 1.5, y: 1.45, z: 1.7 },
+		pos: { x: 0, y: 1, z: 0 },
+		inertia: { x: 0, y: 0, z: 0 },
+		quat: { x: 0, y: 0, z: 0, w: 1 },
+		mass: 3,
+		mesh: undefined,
+		shape: undefined,
+		color: 0xffff00,
+		transparent: true,
+		opacity: .8,
+		shininess: 0,
+		castShadow: false,
+		receiveShadow: false,
+		physics: {
+			friction: 1,
+			restitution: 0
+		},
+		// group: DEFAULT_GROUP,
+		// mask: DEFAULT_MASK
+	},
+	// ---------------- ----------------
 	init: function (_physics, _GLTFLoader) {
 		this.playerTank = _GLTFLoader.models.tank1
 		this.playerTurret = this.playerTank.children[0].children[3]
-		this.config = _physics.modelsPhysics.playerBox
+		this.addProjectilOrigineMesh()
+
+		// this.config = _physics.modelsPhysics.playerBox
 		this.panelManager()
 		this.pointerManager()
 		_physics.set_MeshAndPhysics(this.config, _scene)
@@ -55,42 +66,42 @@ let _player = {
 		this.playerMesh = this.config.mesh
 		this.playerMesh.add(this.playerTank)
 
+		_Shoot.init(this.playerMesh, this.playerTurret, _scene, _physics)
 		_Engine.init(this.playerTank)
 
 		this.initiated = true
 	},
+
+	addProjectilOrigineMesh: function () {
+		let geometry = new THREE.BoxGeometry(.5, .25, .5);
+		let material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+		this.projectilOrigine = new THREE.Mesh(geometry, material);
+		this.projectilOrigine.position.z = 5
+		this.projectilOrigine.position.y = -.5
+		this.playerTank.children[0].children[3].add(this.projectilOrigine)
+		console.log(this.projectilOrigine.position)
+	},
+	// ---------------- ----------------
 	switchShootType: function () {
 		this.currentShootIndex = (this.currentShootIndex + 1) % this.shootTypes.length;
+		console.log('currentShootIndex', this.currentShootIndex)
 	},
-	onDocumentMouseDown: function (event) {
-		if (event.button === 0) { // 0 = bouton gauche de la souris
-			_player.shoot = true;
-		}
-	},
-	onDocumentMouseUp: function (event) {
-		if (event.button === 0) { // 0 = bouton gauche de la souris
-			_player.shoot = false;
-		}
-	},
+	onDocumentMouseDown: function (event) { if (event.button === 0) _player.shoot = true; },
+	onDocumentMouseUp: function (event) { if (event.button === 0) _player.shoot = false; },
 	onDocumentKey: function (e) {
-		if (e.type === "keydown" || e.type === "keyup") {
-			_player.keyMap[e.code] = e.type === "keydown";
-		}
+		if (e.type === "keydown" || e.type === "keyup") _player.keyMap[e.code] = e.type === "keydown";
 		if (_player.pointerLocked) {
 			_player.actions.moveForward = _player.keyMap["KeyW"];
 			_player.actions.moveBackward = _player.keyMap["KeyS"];
-
 			_player.actions.moveLeft = _player.keyMap["KeyQ"];
 			_player.actions.moveRight = _player.keyMap["KeyE"];
-
 			_player.actions.turnLeft = _player.keyMap["KeyA"];
 			_player.actions.turnRight = _player.keyMap["KeyD"];
-
-
+			_player.actions.jump = _player.keyMap["KeyJ"];
 			// Condition pour changer le type de tir avec la barre d'espace
 			if (e.code === "Space" && e.type === "keydown") {
 				_player.switchShootType();
-				_player.actions.jump = true
+				// _player.actions.jump = true
 			}
 		}
 	},
@@ -154,87 +165,58 @@ let _player = {
 		this.startButton.textContent = 'startButton'
 		this.menuPanel.appendChild(this.startButton)
 		document.body.appendChild(this.menuPanel)
-		this.startButton.addEventListener(
-			"click",
-			() => {
-				_scene.renderer.domElement.requestPointerLock();
-			},
-			false
-		);
+		this.startButton.addEventListener("click", () => { _scene.renderer.domElement.requestPointerLock(); }, false);
 	},
-
-	accelerate: function () {
-
+	update: function (deltaTime, time) {
+		_Shoot.update(deltaTime, time)
+		this.checkActions(deltaTime, time)
 	},
-	decelerate: function () { },
-
 	checkActions: function (deltaTime, time) {
-		this.inputVelocity = new THREE.Vector3(0, 0, 0);
+
 		let cube = this.config.mesh
+		this.inputVelocity = new THREE.Vector3(0, 0, 0);
+
 		let transformAux1 = new Ammo.btTransform();
 		let quaternion = new THREE.Quaternion();
 		let position = new THREE.Vector3();
 
-		let max = (this.config[this.config.shapeType].y)
-		if (cube.position.y > 0 + max) {
-			this.actions.isjumping = true
-			this.actions.jump = false
-		}
-		else {
-			this.actions.isjumping = false
-		}
-
-		if (_player.actions.jump && !_player.actions.isjumping) {
-			this.jump(cube.userData.physicsBody)
-		}
+		// is jumping 
+		// let max = (this.config[this.config.shapeType].y)
+		// if (cube.position.y > 0 + max) {
+		// 	this.actions.isjumping = true;
+		// 	this.actions.jump = false
+		// }
+		// else {
+		// 	this.actions.isjumping = false
+		// }
+		// if (_player.actions.jump && !_player.actions.isjumping) this.jump(cube.userData.physicsBody);
 
 
-		let vitesse = _Engine.get_currentPower()
-
-		// Calculer la direction de déplacement
-		let forward = new THREE.Vector3(0, 0, 1);
-		forward.applyQuaternion(cube.quaternion);
-		forward.normalize();
-
+		// AVANT ARRIERE
+		let engineStatus = _Engine.get_engineStatus()
+		let forward = new THREE.Vector3(0, 0, 1).applyQuaternion(cube.quaternion).normalize();
 		if (this.actions.moveForward || this.actions.moveBackward) {
-			if (this.actions.moveForward) {
-				_Engine.powerUp()
-			}
-			else if (this.actions.moveBackward) {
-				_Engine.powerDown()
-			}
-		}
-		if (vitesse.power !== 0) {
-			this.inputVelocity.add(forward.multiplyScalar(vitesse.power * deltaTime));
+			if (this.actions.moveForward) _Engine.powerUp();
+			else if (this.actions.moveBackward) _Engine.powerDown();
 		}
 
+		if (engineStatus.power !== 0) this.inputVelocity.add(forward.multiplyScalar(engineStatus.power * deltaTime));
 
-		let right = new THREE.Vector3(1, 0, 0);
-		right.applyQuaternion(cube.quaternion);
-		right.normalize();
-		// na pas enlever
-		if (this.actions.moveLeft) {
-			this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
-		}
-		if (this.actions.moveRight) {
-			this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
-		}
+
+		// TURN GAUCHE DROITE
+		let right = new THREE.Vector3(1, 0, 0).applyQuaternion(cube.quaternion).normalize();
+		if (this.actions.moveLeft) this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
+		if (this.actions.moveRight) this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
 
 		// Calculer les nouvelles rotations et positions
 		if (this.actions.turnLeft || this.actions.turnRight) {
-			let sens = vitesse.power > 0 ? 1 : -1
-			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * 2.0 * sens;
+			let sens = engineStatus.power >= 0 ? 1 : -1; // invert directection while going back
+			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * this.turnSpeed * sens;
 			let axis = new THREE.Vector3(0, 1, 0);
 			quaternion.setFromAxisAngle(axis, angle);
 			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
 			// console.log((this.actions.turnLeft ? 'tourner a droite' : 'tourner a gauche'))
 		}
-
-
-
-
-
-
 
 
 		// Mettre à jour la transformation du corps physique
@@ -256,221 +238,13 @@ let _player = {
 
 			body.setWorldTransform(transformAux1);
 			body.activate();
+
+
+			if (this.shoot) {
+				let done = _Shoot.shoot(this.shootTypes[this.currentShootIndex]);
+			}
 		}
 		_Engine.update()
-	},
-	checkActionsFAKE: function (deltaTime, time) {
-		if (!this.speedState) this.speedState = SPEED_STATES.STOPPED;
-		console.log(this.speedState)
-		if (this.actions.moveForward) {
-			if (this.speedState === SPEED_STATES.STOPPED) {
-				this.speedState = SPEED_STATES.SLOW;
-			} else if (this.speedState === SPEED_STATES.SLOW) {
-				this.speedState = SPEED_STATES.FAST;
-			} else if (this.speedState === SPEED_STATES.FAST) {
-				this.speedState = SPEED_STATES.VERY_FAST;
-			}
-		} else if (this.actions.moveBackward) {
-			if (this.speedState === SPEED_STATES.VERY_FAST) {
-				this.speedState = SPEED_STATES.FAST;
-			} else if (this.speedState === SPEED_STATES.FAST) {
-				this.speedState = SPEED_STATES.SLOW;
-			} else if (this.speedState === SPEED_STATES.SLOW) {
-				this.speedState = SPEED_STATES.STOPPED;
-			} else if (this.speedState === SPEED_STATES.STOPPED) {
-				this.speedState = SPEED_STATES.REVERSE_SLOW;
-			} else if (this.speedState === SPEED_STATES.REVERSE_SLOW) {
-				this.speedState = SPEED_STATES.REVERSE_FAST;
-			}
-		}
-
-		// Calculer la direction de déplacement
-		let forward = new THREE.Vector3(0, 0, 1);
-		forward.applyQuaternion(this.config.mesh.quaternion);
-		forward.normalize();
-
-		// Appliquer la vitesse correspondante
-		let speed = SPEED_VALUES[this.speedState] * deltaTime;
-		this.inputVelocity.copy(forward.multiplyScalar(speed));
-
-		// Mettre à jour la transformation du corps physique
-		let cube = this.config.mesh;
-		if (cube.userData.physicsBody) {
-			let body = cube.userData.physicsBody;
-			let transformAux1 = new Ammo.btTransform();
-			body.getMotionState().getWorldTransform(transformAux1);
-
-			let position = new THREE.Vector3(
-				transformAux1.getOrigin().x() + this.inputVelocity.x,
-				transformAux1.getOrigin().y() + this.inputVelocity.y,
-				transformAux1.getOrigin().z() + this.inputVelocity.z
-			);
-
-			let btQuat = transformAux1.getRotation();
-			btQuat.setValue(cube.quaternion.x, cube.quaternion.y, cube.quaternion.z, cube.quaternion.w);
-
-			transformAux1.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
-			transformAux1.setRotation(btQuat);
-
-			body.setWorldTransform(transformAux1);
-			body.activate();
-		}
-	},
-	checkActions2quimarche: function (deltaTime, time) {
-		let maxForwardSpeed = .1;  // Vitesse maximale en avant
-		let maxBackwardSpeed = .1;  // Vitesse maximale en arrière
-		let acceleration = .02;  // Accélération
-		let deceleration = .01;  // Décélération
-
-		this.inputVelocity = new THREE.Vector3(0, 0, 0);
-		let cube = this.config.mesh;
-		let transformAux1 = new Ammo.btTransform();
-		let quaternion = new THREE.Quaternion();
-		let position = new THREE.Vector3();
-
-		let max = (this.config[this.config.shapeType].y);
-		if (cube.position.y > 0 + max) {
-			this.actions.isjumping = true;
-			this.actions.jump = false;
-		} else {
-			this.actions.isjumping = false;
-		}
-
-		if (_player.actions.jump && !_player.actions.isjumping) {
-			this.jump(cube.userData.physicsBody);
-		}
-
-		// Calculer les nouvelles rotations et positions
-		if (this.actions.turnLeft || this.actions.turnRight) {
-			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * 2.0;
-			let axis = new THREE.Vector3(0, 1, 0);
-			quaternion.setFromAxisAngle(axis, angle);
-			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
-		}
-
-		// Gestion de la vitesse
-		if (!this.currentSpeed) this.currentSpeed = 0;
-
-		if (this.actions.moveForward) {
-			this.currentSpeed += acceleration * deltaTime;
-			if (this.currentSpeed > maxForwardSpeed) this.currentSpeed = maxForwardSpeed;
-		} else if (this.actions.moveBackward) {
-			this.currentSpeed -= acceleration * deltaTime;
-			if (this.currentSpeed < -maxBackwardSpeed) this.currentSpeed = -maxBackwardSpeed;
-		} else {
-			// Si aucune action de mouvement n'est en cours, diminuer progressivement la vitesse
-			if (this.currentSpeed > 0) {
-				this.currentSpeed -= deceleration * deltaTime;
-				if (this.currentSpeed < 0) this.currentSpeed = 0;
-			} else if (this.currentSpeed < 0) {
-				this.currentSpeed += deceleration * deltaTime;
-				if (this.currentSpeed > 0) this.currentSpeed = 0;
-			}
-		}
-
-		// Calculer la direction de déplacement
-		let forward = new THREE.Vector3(0, 0, 1);
-		forward.applyQuaternion(cube.quaternion);
-		forward.normalize();
-
-		this.inputVelocity.add(forward.multiplyScalar(this.currentSpeed));
-
-		// Mettre à jour la transformation du corps physique
-		if (cube.userData.physicsBody) {
-			let body = cube.userData.physicsBody;
-			body.getMotionState().getWorldTransform(transformAux1);
-
-			position.set(
-				transformAux1.getOrigin().x() + this.inputVelocity.x,
-				transformAux1.getOrigin().y() + this.inputVelocity.y,
-				transformAux1.getOrigin().z() + this.inputVelocity.z
-			);
-
-			let btQuat = transformAux1.getRotation();
-			btQuat.setValue(cube.quaternion.x, cube.quaternion.y, cube.quaternion.z, cube.quaternion.w);
-
-			transformAux1.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
-			transformAux1.setRotation(btQuat);
-
-			body.setWorldTransform(transformAux1);
-			body.activate();
-		}
-	},
-	checkActions9999: function (deltaTime, time) {
-
-		this.inputVelocity = new THREE.Vector3(0, 0, 0);
-		let cube = this.config.mesh
-		let transformAux1 = new Ammo.btTransform();
-		let quaternion = new THREE.Quaternion();
-		let position = new THREE.Vector3();
-
-		let max = (this.config[this.config.shapeType].y)
-		if (cube.position.y > 0 + max) {
-			this.actions.isjumping = true
-			this.actions.jump = false
-		}
-		else {
-			this.actions.isjumping = false
-		}
-
-		if (_player.actions.jump && !_player.actions.isjumping) {
-			this.jump(cube.userData.physicsBody)
-		}
-
-
-		// Calculer les nouvelles rotations et positions
-		if (this.actions.turnLeft || this.actions.turnRight) {
-			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * 2.0;
-			let axis = new THREE.Vector3(0, 1, 0);
-			quaternion.setFromAxisAngle(axis, angle);
-			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
-			// console.log((this.actions.turnLeft ? 'tourner a droite' : 'tourner a gauche'))
-		}
-
-		// Calculer la direction de déplacement
-		let forward = new THREE.Vector3(0, 0, 1);
-		forward.applyQuaternion(cube.quaternion);
-		forward.normalize();
-
-		if (this.actions.moveForward) {
-			this.inputVelocity.add(forward.multiplyScalar(5 * deltaTime));
-		}
-		if (this.actions.moveBackward) {
-			this.inputVelocity.add(forward.multiplyScalar(-5 * deltaTime));
-		}
-		let right = new THREE.Vector3(1, 0, 0);
-		right.applyQuaternion(cube.quaternion);
-		right.normalize();
-
-		// na pas enlever
-		if (this.actions.moveLeft) {
-			this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
-		}
-		if (this.actions.moveRight) {
-			this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
-		}
-
-
-		// Mettre à jour la transformation du corps physique
-		if (cube.userData.physicsBody) {
-			let body = cube.userData.physicsBody;
-			body.getMotionState().getWorldTransform(transformAux1);
-
-			position.set(
-				transformAux1.getOrigin().x() + this.inputVelocity.x,
-				transformAux1.getOrigin().y() + this.inputVelocity.y,
-				transformAux1.getOrigin().z() + this.inputVelocity.z
-			);
-
-			let btQuat = transformAux1.getRotation();
-			btQuat.setValue(cube.quaternion.x, cube.quaternion.y, cube.quaternion.z, cube.quaternion.w);
-
-			transformAux1.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
-			transformAux1.setRotation(btQuat);
-
-			body.setWorldTransform(transformAux1);
-			body.activate();
-		}
 	},
 	jump: function () {
 		if (this.actions && this.actions.jump) { // Simple vérification pour permettre de sauter seulement si on est proche du sol
@@ -479,27 +253,6 @@ let _player = {
 			cube.userData.physicsBody.applyCentralImpulse(jumpForce);
 			this.actions.jump = false
 			this.actions.isjumping = true
-		}
-
-	},
-	setNewPosition: function () {
-		let cube = this.config.mesh
-		let playerPhysicsBody = cube.userData.physicsBody;
-		let ms = playerPhysicsBody.getMotionState();
-		if (ms) {
-			let transform = new Ammo.btTransform();
-			ms.getWorldTransform(transform);
-
-			// Update position
-			let position = transform.getOrigin();
-			position.setX(position.x() + this.inputVelocity.x);
-			position.setY(position.y() + this.inputVelocity.y);
-			position.setZ(position.z() + this.inputVelocity.z);
-
-			transform.setOrigin(position);
-			ms.setWorldTransform(transform);
-			playerPhysicsBody.activate();
-			playerPhysicsBody.setMotionState(ms);
 		}
 
 	},

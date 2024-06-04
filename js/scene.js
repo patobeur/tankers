@@ -30,9 +30,9 @@ let _scene = {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 		this.renderer.autoClear = true
-		this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-		this.renderer.toneMappingExposure = 1
-		this.renderer.setClearColor(0x000010, 1.0);
+		// this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+		// this.renderer.toneMappingExposure = 1
+		// this.renderer.setClearColor(0x000010, 1.0);
 		this.renderer.shadowMap.enabled = true
 		document.body.appendChild(this.renderer.domElement);
 	},
@@ -85,14 +85,24 @@ let _scene = {
 	},
 	// POINT light
 	set_lights: function () {
-		const pointLight1 = new THREE.PointLight(0xff0000, 1, 100);
-		pointLight1.position.set(2, 1, 2);
-		const pointLight2 = new THREE.PointLight(0x0000ff, 1, 100);
-		pointLight2.position.set(-2, 1, -2);
-		this.scene.add(pointLight2);
-		this.scene.add(pointLight1);
-		this.ambientLight = new THREE.AmbientLight(0xFFFFFF, .8); // soft white light
-		this.scene.add(this.ambientLight);
+
+		var ambientLight = new THREE.AmbientLight('white', 0.3);
+		this.scene.add(ambientLight);
+
+		var topLight = new THREE.DirectionalLight('white', 0 * 0.3);
+		topLight.position.set(0, 0, 1);
+		this.scene.add(topLight);
+
+		var light = new THREE.DirectionalLight('white', 1);
+		this.scene.add(light);
+		// const pointLight1 = new THREE.PointLight(0xff0000, 1, 100);
+		// pointLight1.position.set(2, 1, 2);
+		// const pointLight2 = new THREE.PointLight(0x0000ff, 1, 100);
+		// pointLight2.position.set(-2, 1, -2);
+		// this.scene.add(pointLight2);
+		// this.scene.add(pointLight1);
+		// this.ambientLight = new THREE.AmbientLight(0xFFFFFF, .8); // soft white light
+		// this.scene.add(this.ambientLight);
 	},
 	// Initialisation de la Scene et Loire
 	init: function () {
@@ -122,28 +132,9 @@ let _scene = {
 	},
 	init_floor: function (what) {
 		console.log('init_floor', what)
-		let config = _physics.modelsPhysics.floorOne
-		console.log(config)
+		let config = _physics.modelsPhysics.groundZero
 		_physics.set_MeshAndPhysics(config, _scene)
 		_scene.scene.add(config.mesh)
-
-
-
-		const material = new THREE.MeshPhongMaterial({ map: _TextureLoader.textures['floor'].map });
-		const geometry = new THREE.PlaneGeometry(_TextureLoader.files2['floor'].w * 0.10, _TextureLoader.files2['floor'].h * 0.10);
-		const plane = new THREE.Mesh(geometry, material);
-		plane.position.y = 0.001
-		plane.receiveShadow = true
-		plane.rotation.x = - Math.PI / 2
-
-		_scene.scene.add(plane)
-
-
-
-
-
-
-
 	},
 	init_environment: function (what) {
 		console.log('init_environment', what)
@@ -165,10 +156,10 @@ let _scene = {
 			}
 		}
 
-		let config = _physics.modelsPhysics.floorOne
+		let config = _physics.modelsPhysics.groundZero
 		_physics.set_MeshAndPhysics(config, _scene)
 		_scene.scene.add(config.mesh)
-		this.floorOne = _physics.modelsPhysics.floorOne.mesh
+		this.groundZero = _physics.modelsPhysics.groundZero.mesh
 	},
 
 

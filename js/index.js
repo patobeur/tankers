@@ -23,7 +23,7 @@ let initWorld = () => {
 		delta = clock.getDelta();
 		if (_scene.SUN.userData.initiated) _scene.SUN.move();
 
-		if (_player && _player.initiated) _player.checkActions(delta, time); // Vérifier si le joueur bouge
+		if (_player && _player.initiated) _player.update(delta, time); // Vérifier si le joueur bouge
 
 		if (typeof _OrbitControls === 'object') _OrbitControls.update();
 

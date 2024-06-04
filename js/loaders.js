@@ -2,11 +2,14 @@
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const _consoleOn = false
-const _formulas = {
-	rand: (min, max) => { return Math.floor(Math.random() * (max - min + 1) + min) }
-}
 const _front = {
 	id: new Number(0),
+	addDivtoDom: function (params, stringcss, styleid) {
+		let div = this.createDiv(params)
+		let css = this.addCss(stringcss, styleid)
+		document.body.appendChild(div)
+		return div
+	},
 	createDiv: function (params) {
 		let element = document.createElement(params.tag);
 		if (params.attributes) {
@@ -34,7 +37,7 @@ const _front = {
 		const reg = /[&<>"'/]/gi;
 		return string.replace(reg, (match) => map[match]);
 	},
-	// rand: (min, max) => {return Math.floor(Math.random() * (max - min + 1) + min);},
+	rand: (min, max) => { return Math.floor(Math.random() * (max - min + 1) + min) },
 	// get_DegreeWithTwoPos: function (x, y, X, Y) { return (Math.atan2(Y - y, X - x) * 180) / Math.PI; },
 	// get_aleaVector3: function (min,max) {return {x: this.rand(min,max),y: this.rand(min,max),z: this.rand(min,max)}}
 };
@@ -116,7 +119,7 @@ let _TextureLoader = {
 	textureLoader: new THREE.TextureLoader(),
 	files2: {
 		'floor': { name: 'floor', path: '/assets/textures/', fileName: 'road4.jpg', w: 1572, h: 899 },
-		'sky': { name: 'sky', path: '/assets/textures/', fileName: 'fond.jpg' },
+		'sky': { name: 'sky', path: '/assets/textures/', fileName: 'sky.jpg' },
 	},
 	init: function (root = '', callbackFunction = this.callback) {
 		this.root = root
