@@ -9,8 +9,12 @@ let _Engine = {
 		this.add_board()
 	},
 	// DATAS
-	currentGear: new Number(2),
-	currentPower: new Number(0),
+	status: {
+		name: 'STOPPED',
+		power: new Number(0),
+		currentGear: new Number(2),
+	},
+	// currentGear: new Number(2),
 	hotLimits: { cur: 0, max: 100 },
 	delay: { cur: 0, max: 20, },
 	GEARS: [
@@ -31,7 +35,8 @@ let _Engine = {
 			let divs = document.body.getElementsByClassName('gear')
 			for (let index = divs.length - 1; index >= 0; index--) divs[index].classList.remove('active');
 		}
-		this.boards[this.GEARS[this.currentGear].name].classList.add('active')
+		// this.boards[this.GEARS[this.currentGear].name].classList.add('active')
+		this.boards[this.status.name].classList.add('active')
 	},
 	// functions
 	add_board: function () {
@@ -59,15 +64,19 @@ let _Engine = {
 	},
 	// ENGEENINERINERING
 	get_engineStatus: function () {
-		let status = this.GEARS[this.currentGear]
-		return {
-			name: status.name,
-			power: status.power
-		}
+		return this.status
+	},
+	// ENGEENINERINERING
+	set_engineStatus: function () {
+		this.status.name = this.GEARS[this.status.currentGear].name
+		this.status.power = this.GEARS[this.status.currentGear].power
 	},
 	powerUp: function () {
 		if (this.delay.cur === 0) {
-			if (this.currentGear < this.max) this.currentGear++;
+			if (this.status.currentGear < this.max) {
+				this.status.currentGear++;
+				this.set_engineStatus()
+			}
 			this.delay.cur++
 			this.refresh_board()
 			this.boards['board_speed_emoji'].classList.add('active')
@@ -75,7 +84,10 @@ let _Engine = {
 	},
 	powerDown: function () {
 		if (this.delay.cur === 0) {
-			if (this.currentGear > 0) this.currentGear--;
+			if (this.status.currentGear > 0) {
+				this.status.currentGear--;
+				this.set_engineStatus()
+			}
 			this.delay.cur++
 			this.refresh_board()
 			this.boards['board_speed_emoji'].classList.add('active')

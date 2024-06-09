@@ -182,17 +182,14 @@ let _player = {
 
 
 		// AVANT ARRIERE
-		let engineStatus = _Engine.get_engineStatus()
 		let forward = new THREE.Vector3(0, 0, 1).applyQuaternion(cube.quaternion).normalize();
 		if (this.actions.moveForward || this.actions.moveBackward) {
 			if (this.actions.moveForward) _Engine.powerUp();
 			else if (this.actions.moveBackward) _Engine.powerDown();
 		}
 
-		if (engineStatus.power !== 0) {
-
-
-			this.inputVelocity.add(forward.multiplyScalar(engineStatus.power * deltaTime));
+		if (_Engine.status.power !== 0) {
+			this.inputVelocity.add(forward.multiplyScalar(_Engine.status.power * deltaTime));
 		}
 
 
@@ -203,7 +200,7 @@ let _player = {
 
 		// Calculer les nouvelles rotations et position
 		if (this.actions.turnLeft || this.actions.turnRight) {
-			let sens = engineStatus.power >= 0 ? 1 : -1; // invert directection while going back
+			let sens = _Engine.status.power >= 0 ? 1 : -1; // invert directection while going back
 			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * this.turnSpeed * sens;
 			let axis = new THREE.Vector3(0, 1, 0);
 			quaternion.setFromAxisAngle(axis, angle);
@@ -263,24 +260,24 @@ let _player = {
 
 	},
 	animateChar: function () {
-
+		let char = this._ModelsManager.allMeshsAndDatas.character['Kimono_Female']
 		// ----------------
 		// ANIMATIONS
 		// ----------------
-		if (_Engine.currentGear === 0) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
-		// else if (_Engine.currentGear === 1) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
-		else if (_Engine.currentGear === 2) {
-			// position a l'arret
-			this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Idle')
+		if (_Engine.status.currentGear === 0) { char.changeAnimation('Walk') }
+		else if (_Engine.status.currentGear === 2) { char.changeAnimation('Idle') }// position a l'arret
+		else if (_Engine.status.currentGear === 3) { char.changeAnimation('Walk') }
+		else if (_Engine.status.currentGear === 5) { char.changeAnimation('Run') }
+
+		if (this.shoot) {
+			char.changeAnimation('Punch')
+
+
+			// wait until go old animations
 		}
-		else if (_Engine.currentGear === 3) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
-		// else if (_Engine.currentGear === 4) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
-		else if (_Engine.currentGear === 5) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Run') }
 
-		if (this.shoot) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Punch') }
-
-		// console.log(this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'])
-		// info dans this._ModelsManager.allMeshsAndDatas.character['Kimono_Female']
+		// console.log(char)
+		// toutes ces info sont dans char
 		// 0: Object { name: "Death", duration: 2.2916667461395264, blendMode: 2500, … }
 		// 1: Object { name: "Defeat", duration: 2.5, blendMode: 2500, … }
 		// 2: Object { name: "Idle", duration: 4.166666507720947, blendMode: 2500, … }
@@ -306,5 +303,12 @@ let _player = {
 	delayedAction: () => {
 
 	}
+}
+let animateChar = {
+	datas: {},
+	init: function () {
+
+	}
+
 }
 export { _player }

@@ -1,7 +1,6 @@
 "use strict";
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
 class ModelsManager {
 	conslog = true;
 	_LOADER;
@@ -78,7 +77,7 @@ class ModelsManager {
 
 		MODEL.changeAnimation = (newAnimName) => {
 			if (this.currentAnimation != newAnimName) {
-				console.log(this.currentAnimation, newAnimName)
+				console.log(this.currentAnimation + ' to ' + newAnimName)
 				this.currentAnimation = newAnimName;
 				this.MegaClip = THREE.AnimationClip.findByName(
 					MODEL.gltf.animations,
@@ -141,22 +140,6 @@ class ModelsManager {
 		}
 	}
 
-	// // ------------------------
-	// // switchAnimation
-	// // ------------------------
-	// switchAnimation(newAction, name = 'Kimono_Female') {
-	// 	console.log('newAction', newAction)
-	// 	console.log('this.currentAnimation', this.currentAnimation)
-	// 	console.log('this.allMeshsAndDatas', this.allMeshsAndDatas.character[name])
-	// 	if (newAction !== this.currentAnimation) {
-
-
-	// 		//qu'est ce qui ne vas pas ici
-	// 		// this.allMeshsAndDatas.character[name].MegaAction.stop();
-	// 		// this.allMeshsAndDatas.character[name].MegaAction = newAction;
-	// 		// this.allMeshsAndDatas.character[name].MegaAction.play();
-	// 	}
-	// }
 	// AddModelsWithDefaultAnimation() {
 	// 	for (const key in this.allMeshsAndDatas) {
 	// 		if (this.allMeshsAndDatas.hasOwnProperty(key)) {
