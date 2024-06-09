@@ -111,48 +111,48 @@ let _modelsPhysicsAuto = {
 	// 		restitution: 0
 	// 	}
 	// },
-	'wall2': {
-		name: "wall2",
-		shapeType: 'btBoxShape',
-		btBoxShape: { x: .5, y: 2, z: 19.50 },
-		pos: { x: 9.75, y: 1, z: 0 },
-		inertia: { x: 0, y: 0, z: 0 },
-		quat: { x: 0, y: 0, z: 0, w: 1 },
-		mass: 0,
-		mesh: undefined,
-		shape: undefined,
-		color: 0x662626,
-		// transparent: true,
-		// opacity: 0.8,
-		shininess: 100,
-		castShadow: true,
-		receiveShadow: true,
-		physics: {
-			friction: 1,
-			restitution: 0
-		}
-	},
-	'wall3': {
-		name: "wall3",
-		shapeType: 'btBoxShape',
-		btBoxShape: { x: .5, y: 2, z: 19.50 },
-		pos: { x: -9.75, y: 1, z: 0 },
-		inertia: { x: 0, y: 0, z: 0 },
-		quat: { x: 0, y: 0, z: 0, w: 1 },
-		mass: 0,
-		mesh: undefined,
-		shape: undefined,
-		color: 0x252566,
-		// transparent: true,
-		// opacity: 0.8,
-		shininess: 100,
-		castShadow: true,
-		receiveShadow: true,
-		physics: {
-			friction: 1,
-			restitution: 0
-		}
-	},
+	// 'wall2': {
+	// 	name: "wall2",
+	// 	shapeType: 'btBoxShape',
+	// 	btBoxShape: { x: .5, y: 2, z: 19.50 },
+	// 	pos: { x: 9.75, y: 1, z: 0 },
+	// 	inertia: { x: 0, y: 0, z: 0 },
+	// 	quat: { x: 0, y: 0, z: 0, w: 1 },
+	// 	mass: 0,
+	// 	mesh: undefined,
+	// 	shape: undefined,
+	// 	color: 0x662626,
+	// 	// transparent: true,
+	// 	// opacity: 0.8,
+	// 	shininess: 100,
+	// 	castShadow: true,
+	// 	receiveShadow: true,
+	// 	physics: {
+	// 		friction: 1,
+	// 		restitution: 0
+	// 	}
+	// },
+	// 'wall3': {
+	// 	name: "wall3",
+	// 	shapeType: 'btBoxShape',
+	// 	btBoxShape: { x: .5, y: 2, z: 19.50 },
+	// 	pos: { x: -9.75, y: 1, z: 0 },
+	// 	inertia: { x: 0, y: 0, z: 0 },
+	// 	quat: { x: 0, y: 0, z: 0, w: 1 },
+	// 	mass: 0,
+	// 	mesh: undefined,
+	// 	shape: undefined,
+	// 	color: 0x252566,
+	// 	// transparent: true,
+	// 	// opacity: 0.8,
+	// 	shininess: 100,
+	// 	castShadow: true,
+	// 	receiveShadow: true,
+	// 	physics: {
+	// 		friction: 1,
+	// 		restitution: 0
+	// 	}
+	// },
 	// 'wall4': {
 	// 	name: "wall4",
 	// 	shapeType: 'btBoxShape',
@@ -179,8 +179,9 @@ let _modelsPhysics = {
 	'groundZero': {
 		name: "groundZero",
 		shapeType: 'btBoxShape',
-		mapFile: _TextureLoader.files2['floor'],
-		btBoxShape: { x: _TextureLoader.files2['floor'].w * 0.10, y: .25, z: _TextureLoader.files2['floor'].h * 0.10 },
+		// mapFile: _TextureLoader.files2['floor'],
+		// btBoxShape: { x: _TextureLoader.files2['floor'].w * 0.10, y: .25, z: _TextureLoader.files2['floor'].h * 0.10 },
+		btBoxShape: { x: 200, y: .25, z: 200 },
 		pos: { x: 0, y: -.125, z: 0 },
 		inertia: { x: 0, y: 0, z: 0 },
 		quat: { x: 0, y: 0, z: 0, w: 1 },

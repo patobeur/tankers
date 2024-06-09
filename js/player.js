@@ -3,8 +3,7 @@
 import * as THREE from "three";
 import { _scene, } from '/js/scene.js'
 import { _OrbitControls } from '/js/OrbitControls.js';
-import { _Engine } from '/js/Engine.js';
-import { _Shoot } from '/js/shoot.js';
+import { _Engine, _Shoot } from '/js/Engine.js';
 
 let _player = {
 	initiated: false,
@@ -53,8 +52,9 @@ let _player = {
 		// mask: DEFAULT_MASK
 	},
 	// ---------------- ----------------
-	init: function (_physics, _GLTFLoader) {
-		this.playerTank = _GLTFLoader.models.tank1
+	init: function (_physics, _GLTFLoader, _ModelsManager) {
+		this._ModelsManager = _ModelsManager
+		this.playerTank = _GLTFLoader.models.tankAlpha
 		this.playerTurret = this.playerTank.children[0].children[3]
 		this.addProjectilOrigineMesh()
 
@@ -62,12 +62,23 @@ let _player = {
 		this.panelManager()
 		this.pointerManager()
 		_physics.set_MeshAndPhysics(this.config, _scene)
+
+		// ------------------
+		// add model animated
+		// ------------------
+
+
 		_scene.scene.add(this.config.mesh)
 		this.playerMesh = this.config.mesh
 		this.playerMesh.add(this.playerTank)
 
+		this.config.animatedMesh = _ModelsManager.allMeshsAndDatas.character['Kimono_Female'].mesh
+		this.config.animatedMesh.position.y -= this.config[this.config.shapeType].y / 2
+
+		this.playerMesh.add(this.config.animatedMesh)
+
 		_Shoot.init(this.playerMesh, this.playerTurret, _scene, _physics)
-		_Engine.init(this.playerTank)
+		_Engine.init(_ModelsManager)
 
 		this.initiated = true
 	},
@@ -85,6 +96,7 @@ let _player = {
 	switchShootType: function () {
 		this.currentShootIndex = (this.currentShootIndex + 1) % this.shootTypes.length;
 		console.log('currentShootIndex', this.currentShootIndex)
+		this.switchShoot = false
 	},
 	onDocumentMouseDown: function (event) { if (event.button === 0) _player.shoot = true; },
 	onDocumentMouseUp: function (event) { if (event.button === 0) _player.shoot = false; },
@@ -98,61 +110,38 @@ let _player = {
 			_player.actions.turnLeft = _player.keyMap["KeyA"];
 			_player.actions.turnRight = _player.keyMap["KeyD"];
 			_player.actions.jump = _player.keyMap["KeyJ"];
+			_player.actions.switchShoot = _player.keyMap["Space"];
 			// Condition pour changer le type de tir avec la barre d'espace
-			if (e.code === "Space" && e.type === "keydown") {
-				_player.switchShootType();
-				// _player.actions.jump = true
-			}
+			// if (e.code === "Space" && e.type === "keydown") {
+			// 	_player.switchShootType();
+			// 	// _player.actions.jump = true
+			// }
 		}
 	},
 	pointerManager: function () {
 		document.addEventListener("pointerlockchange", () => {
 			if (document.pointerLockElement === _scene.renderer.domElement) {
 				_player.pointerLocked = true;
-
 				_player.startButton.style.display = "none";
 				_player.menuPanel.style.display = "none";
 				this.instructionsPanel.style.display = "none";
-
 				document.addEventListener("keydown", _player.onDocumentKey, false);
 				document.addEventListener("keyup", _player.onDocumentKey, false);
-
-
 				_scene.renderer.domElement.addEventListener("mousemove", _OrbitControls.onDocumentMouseMove, false);
 				_scene.renderer.domElement.addEventListener("wheel", _OrbitControls.onDocumentMouseWheel, false);
-
-
 				_scene.renderer.domElement.addEventListener("mousedown", _player.onDocumentMouseDown, false);
 				_scene.renderer.domElement.addEventListener("mouseup", _player.onDocumentMouseUp, false);
 
 			} else {
-
 				_player.pointerLocked = false;
-
 				_player.menuPanel.style.display = "block";
-
 				document.removeEventListener("keydown", _player.onDocumentKey, false);
 				document.removeEventListener("keyup", _player.onDocumentKey, false);
-
-
 				_scene.renderer.domElement.removeEventListener("mousedown", _player.onDocumentMouseDown, false);
 				_scene.renderer.domElement.removeEventListener("mouseup", _player.onDocumentMouseUp, false);
-
-				_scene.renderer.domElement.removeEventListener(
-					"mousemove",
-					_OrbitControls.onDocumentMouseMove,
-					false
-				);
-				_scene.renderer.domElement.removeEventListener(
-					"wheel",
-					_OrbitControls.onDocumentMouseWheel,
-					false
-				);
-
-				setTimeout(() => {
-					_player.startButton.style.display = "block";
-					this.instructionsPanel.style.display = "block";
-				}, 1000);
+				_scene.renderer.domElement.removeEventListener("mousemove", _OrbitControls.onDocumentMouseMove, false);
+				_scene.renderer.domElement.removeEventListener("wheel", _OrbitControls.onDocumentMouseWheel, false);
+				setTimeout(() => { _player.startButton.style.display = "block"; this.instructionsPanel.style.display = "block"; }, 1000);
 			}
 		});
 	},
@@ -200,7 +189,11 @@ let _player = {
 			else if (this.actions.moveBackward) _Engine.powerDown();
 		}
 
-		if (engineStatus.power !== 0) this.inputVelocity.add(forward.multiplyScalar(engineStatus.power * deltaTime));
+		if (engineStatus.power !== 0) {
+
+
+			this.inputVelocity.add(forward.multiplyScalar(engineStatus.power * deltaTime));
+		}
 
 
 		// TURN GAUCHE DROITE
@@ -208,7 +201,7 @@ let _player = {
 		if (this.actions.moveLeft) this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
 		if (this.actions.moveRight) this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
 
-		// Calculer les nouvelles rotations et positions
+		// Calculer les nouvelles rotations et position
 		if (this.actions.turnLeft || this.actions.turnRight) {
 			let sens = engineStatus.power >= 0 ? 1 : -1; // invert directection while going back
 			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * this.turnSpeed * sens;
@@ -217,6 +210,15 @@ let _player = {
 			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
 			// console.log((this.actions.turnLeft ? 'tourner a droite' : 'tourner a gauche'))
 		}
+
+		// ----------------
+		// ANIMATIONS
+		// ----------------
+		this.animateChar()
+		// ----------------
+		// END ANIMATIONS
+		// ----------------
+
 
 
 		// Mettre à jour la transformation du corps physique
@@ -243,6 +245,10 @@ let _player = {
 			if (this.shoot) {
 				let done = _Shoot.shoot(this.shootTypes[this.currentShootIndex]);
 			}
+			if (this.switchShoot) {
+				_player.switchShootType();
+				this.switchShoot = false
+			}
 		}
 		_Engine.update()
 	},
@@ -256,5 +262,49 @@ let _player = {
 		}
 
 	},
+	animateChar: function () {
+
+		// ----------------
+		// ANIMATIONS
+		// ----------------
+		if (_Engine.currentGear === 0) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
+		// else if (_Engine.currentGear === 1) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
+		else if (_Engine.currentGear === 2) {
+			// position a l'arret
+			this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Idle')
+		}
+		else if (_Engine.currentGear === 3) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
+		// else if (_Engine.currentGear === 4) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Walk') }
+		else if (_Engine.currentGear === 5) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Run') }
+
+		if (this.shoot) { this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'].changeAnimation('Punch') }
+
+		// console.log(this._ModelsManager.allMeshsAndDatas.character['Kimono_Female'])
+		// info dans this._ModelsManager.allMeshsAndDatas.character['Kimono_Female']
+		// 0: Object { name: "Death", duration: 2.2916667461395264, blendMode: 2500, … }
+		// 1: Object { name: "Defeat", duration: 2.5, blendMode: 2500, … }
+		// 2: Object { name: "Idle", duration: 4.166666507720947, blendMode: 2500, … }
+		// 3: Object { name: "Jump", duration: 1.0416666269302368, blendMode: 2500, … }
+		// 4: Object { name: "PickUp", duration: 1.25, blendMode: 2500, … }
+		// 5: Object { name: "Punch", duration: 0.75, blendMode: 2500, … }
+		// 6: Object { name: "RecieveHit", duration: 0.625, blendMode: 2500, … }
+		// 7: Object { name: "Roll", duration: 0.9166666865348816, blendMode: 2500, … }
+		// 8: Object { name: "Run", duration: 0.875, blendMode: 2500, … }
+		// 9: Object { name: "Run_Carry", duration: 0.300, blendMode: 2500, … }
+		// 10: Object { name: "Shoot_OneHanded", duration: 0.5416666865348816, blendMode: 2500, … }
+		// 11: Object { name: "SitDown", duration: 0.9583333134651184, blendMode: 2500, … }
+		// 12: Object { name: "StandUp", duration: 1.2916666269302368, blendMode: 2500, … }
+		// 13: Object { name: "SwordSlash", duration: 1.0416666269302368, blendMode: 2500, … }
+		// 14: Object { name: "Victory", duration: 1.875, blendMode: 2500, … }
+		// 15: Object { name: "Walk", duration: 1.25, blendMode: 2500, … }
+		// 16: Object { name: "Walk_Carry", duration: 1.25, blendMode: 2500, … }
+
+		// ----------------
+		// END ANIMATIONS
+		// ----------------
+	},
+	delayedAction: () => {
+
+	}
 }
 export { _player }

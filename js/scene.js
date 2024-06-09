@@ -58,7 +58,7 @@ let _scene = {
 		this.SUN.shadow.mapSize.width = 2048; // default
 		this.SUN.shadow.mapSize.height = 2048; // default
 		this.SUN.shadow.camera.near = 1; // default
-		this.SUN.shadow.camera.far = 100; // default
+		this.SUN.shadow.camera.far = 1000; // default
 		this.SUN.shadow.camera.left = -this.SUN.userData.d;
 		this.SUN.shadow.camera.right = this.SUN.userData.d;
 		this.SUN.shadow.camera.top = this.SUN.userData.d;
@@ -82,6 +82,26 @@ let _scene = {
 			if (this.userData.initiated) this.move()
 			return this
 		}
+	},
+	// POINT light
+	set_gltf: function () {
+
+		for (const key in _GLTFLoader.models) {
+			console.log(_GLTFLoader.models[key].userData.set)
+			if (_GLTFLoader.models[key].userData.set === 'dungeon') {
+				// console.log(_GLTFLoader.models[key].userData)
+				// if (_GLTFLoader.models[key].children.length === 1) {
+				_scene.scene.add(_GLTFLoader.models[key]);
+
+				// }
+			}
+		}
+		// for (let index = 0; index < _GLTFLoader.models.length; index++) {
+		// 	const element = _GLTFLoader.models[index];
+		// 	console.log(element)
+		// 	_scene.scene.add(element)
+
+		// }
 	},
 	// POINT light
 	set_lights: function () {
@@ -114,6 +134,7 @@ let _scene = {
 		this.set_lights()
 
 
+		this.set_gltf()
 
 		this.init_floor('ok')
 		this.init_decor('ok')
@@ -143,8 +164,6 @@ let _scene = {
 		textureEquirec.encoding = THREE.sRGBEncoding
 		_scene.scene.environment = textureEquirec
 		_scene.scene.background = textureEquirec
-
-
 	},
 	init_decor: function (what) {
 		console.log('init_decor', what)
@@ -155,13 +174,10 @@ let _scene = {
 				_scene.scene.add(config.mesh)
 			}
 		}
-
 		let config = _physics.modelsPhysics.groundZero
 		_physics.set_MeshAndPhysics(config, _scene)
 		_scene.scene.add(config.mesh)
 		this.groundZero = _physics.modelsPhysics.groundZero.mesh
 	},
-
-
 }
 export { _scene, }
