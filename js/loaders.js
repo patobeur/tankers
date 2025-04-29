@@ -1,8 +1,8 @@
 "use strict";
 import * as THREE from "three";
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { _tank } from 'tankers/assets/tank.js';
-import { _textures } from 'tankers/assets/textures.js';
+import { _tank } from '/tankers/assets/tank.js';
+import { _textures } from '/tankers/assets/textures.js';
 const _consoleOn = false
 const _front = {
 	id: new Number(0),
