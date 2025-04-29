@@ -35,7 +35,6 @@ let _Engine = {
 			let divs = document.body.getElementsByClassName('gear')
 			for (let index = divs.length - 1; index >= 0; index--) divs[index].classList.remove('active');
 		}
-		// this.boards[this.GEARS[this.currentGear].name].classList.add('active')
 		this.boards[this.status.name].classList.add('active')
 	},
 	// functions
