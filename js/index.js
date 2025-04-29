@@ -1,14 +1,14 @@
 
 "use strict";
 import * as THREE from "three";
-import { _scene, } from '/js/scene.js'
-import { _physics } from '/js/physics.js';
-import { _player } from '/js/player.js';
+import { _scene, } from '/tankers/js/scene.js'
+import { _physics } from 'tankers/js/physics.js';
+import { _player } from 'tankers/js/player.js';
 import { _GLTFLoader, _TextureLoader } from '/js/loaders.js';
-import { ModelsManager } from '/js/ModelsManager.js';
-import { _OrbitControls } from '/js/OrbitControls.js';
+import { ModelsManager } from 'tankers/js/ModelsManager.js';
+import { _OrbitControls } from 'tankers/js/OrbitControls.js';
 
-import Stats from 'three/addons/libs/stats.module.js';
+import Stats from 'tankers/three/addons/libs/stats.module.js';
 // let mixer;
 // let idleAction, runAction;
 // let activeAction;

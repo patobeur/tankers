@@ -1,9 +1,9 @@
 
 "use strict";
 import * as THREE from "three";
-import { _scene, } from '/js/scene.js'
-import { _OrbitControls } from '/js/OrbitControls.js';
-import { _Engine, _Shoot } from '/js/Engine.js';
+import { _scene, } from 'tankers/js/scene.js'
+import { _OrbitControls } from 'tankers/js/OrbitControls.js';
+import { _Engine, _Shoot } from 'tankers/js/Engine.js';
 
 let _player = {
 	initiated: false,
