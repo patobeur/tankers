@@ -16,3 +16,5 @@ watch out ! nodes_mudules
 You dont need npm install. Or u will need to change path or copy full folder.
 using this because node_modules_min is now 2.4Mo and node_modules_min is around 70Mo+
 
+[tests](https://patobeur.github.io/tankers/)
+
