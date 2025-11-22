@@ -1,8 +1,8 @@
 "use strict";
 import * as THREE from "three";
 import { BoxLineGeometry } from "three/addons/geometries/BoxLineGeometry.js";
-import { _GLTFLoader, _TextureLoader } from "/tankers/js/loaders.js";
-import { _physics } from "/tankers/js/physics.js";
+import { _GLTFLoader, _TextureLoader } from "/js/loaders.js";
+import { _physics } from "/js/physics.js";
 let _consoleOn = false;
 let _scene = {
 	// SCENE CREATION

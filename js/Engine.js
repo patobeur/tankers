@@ -1,6 +1,6 @@
 "use strict";
 import * as THREE from "three";
-import { _front } from "/tankers/js/loaders.js";
+import { _front } from "/js/loaders.js";
 let _Engine = {
 	// INIT
 	init: function (_ModelsManager) {
