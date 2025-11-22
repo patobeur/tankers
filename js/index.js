@@ -7,7 +7,8 @@ import { _GLTFLoader, _TextureLoader } from "/tankers/js/loaders.js";
 import { ModelsManager } from "/tankers/js/ModelsManager.js";
 import { _OrbitControls } from "/tankers/js/OrbitControls.js";
 
-import Stats from "three/addons/libs/stats.module.js";
+// import Stats from "three/addons/libs/stats.module.js";
+import Stats from "/tankers/nodes_modules_min/three/examples/jsm/libs/stats.module.js";
 // import Stats from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/examples/jsm/libs/stats.module.js";
 
 console.log("index");
