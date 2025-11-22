@@ -10,6 +10,7 @@ import { _OrbitControls } from "/tankers/js/OrbitControls.js";
 // import Stats from "three/addons/libs/stats.module.js";
 import Stats from "/tankers/node_modules_min/three/examples/jsm/libs/stats.module.js";
 
+console.log("index");
 // let mixer;
 // let idleAction, runAction;
 // let activeAction;
