@@ -20,13 +20,14 @@
 			Spacebar : change ammo model.<br />
 			Left mouse clic to fire an ammo !<br />
 		</div>
-		<script src="/tankers/node_modules_min/three/examples/jsm/libs/ammo.wasm.js"></script>
+		<!-- <script src="/tankers/node_modules_min/three/examples/jsm/libs/ammo.wasm.js"></script> -->
+		<script src=" https://cdn.jsdelivr.net/npm/ammojs3@0.0.11/dist/ammo.wasm.min.js "></script>
 
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "/tankers/node_modules_min/three/build/three.module.js",
-					"three/addons/": "/tankers/node_modules_min/three/examples/jsm/"
+					"three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/three.module.js",
+					"three/addons/": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.180.0/examples/jsm//"
 				}
 			}
 		</script>
