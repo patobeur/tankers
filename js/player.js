@@ -1,9 +1,8 @@
-
 "use strict";
 import * as THREE from "three";
-import { _scene, } from '/tankers/js/scene.js'
-import { _OrbitControls } from '/tankers/js/OrbitControls.js';
-import { _Engine, _Shoot } from '/tankers/js/Engine.js';
+import { _scene } from "/js/scene.js";
+import { _OrbitControls } from "/js/OrbitControls.js";
+import { _Engine, _Shoot } from "/js/Engine.js";
 
 let _player = {
 	initiated: false,
@@ -11,13 +10,24 @@ let _player = {
 	pointerLocked: true,
 	// ----------------
 	inputVelocity: new THREE.Vector3(),
-	actions: { ismooving: false, rotating: false, moveForward: false, moveBackward: false, moveLeft: false, moveRight: false, turnLeft: false, turnRight: false, jump: false, isjumping: false },
-	shootTypes: ['basic', 'basic2', 'basic3'],
+	actions: {
+		ismooving: false,
+		rotating: false,
+		moveForward: false,
+		moveBackward: false,
+		moveLeft: false,
+		moveRight: false,
+		turnLeft: false,
+		turnRight: false,
+		jump: false,
+		isjumping: false,
+	},
+	shootTypes: ["basic", "basic2", "basic3"],
 	currentShootIndex: 0,
 	shoot: false,
 	turnSpeed: 2.0,
 	stats: {
-		hp: 100
+		hp: 100,
 	},
 	keyMap: {
 		KeyW: false,
@@ -30,7 +40,7 @@ let _player = {
 	},
 	config: {
 		name: "playerBox",
-		shapeType: 'btBoxShape',
+		shapeType: "btBoxShape",
 		btBoxShape: { x: 1.5, y: 1.45, z: 1.7 },
 		pos: { x: 0, y: 1, z: 0 },
 		inertia: { x: 0, y: 0, z: 0 },
@@ -40,68 +50,75 @@ let _player = {
 		shape: undefined,
 		color: 0xffff00,
 		transparent: true,
-		opacity: .8,
+		opacity: 0.8,
 		shininess: 0,
 		castShadow: false,
 		receiveShadow: false,
 		physics: {
 			friction: 1,
-			restitution: 0
+			restitution: 0,
 		},
 		// group: DEFAULT_GROUP,
 		// mask: DEFAULT_MASK
 	},
 	// ---------------- ----------------
 	init: function (_physics, _GLTFLoader, _ModelsManager) {
-		this._ModelsManager = _ModelsManager
-		this.playerTank = _GLTFLoader.models.tankAlpha
-		this.playerTurret = this.playerTank.children[0].children[3]
-		this.addProjectilOrigineMesh()
+		this._ModelsManager = _ModelsManager;
+		this.playerTank = _GLTFLoader.models.tankAlpha;
+		this.playerTurret = this.playerTank.children[0].children[3];
+		this.addProjectilOrigineMesh();
 
 		// this.config = _physics.modelsPhysics.playerBox
-		this.panelManager()
-		this.pointerManager()
-		_physics.set_MeshAndPhysics(this.config, _scene)
+		this.panelManager();
+		this.pointerManager();
+		_physics.set_MeshAndPhysics(this.config, _scene);
 
 		// ------------------
 		// add model animated
 		// ------------------
 
+		_scene.scene.add(this.config.mesh);
+		this.playerMesh = this.config.mesh;
+		this.playerMesh.add(this.playerTank);
 
-		_scene.scene.add(this.config.mesh)
-		this.playerMesh = this.config.mesh
-		this.playerMesh.add(this.playerTank)
+		this.config.animatedMesh =
+			_ModelsManager.allMeshsAndDatas.character["Kimono_Female"].mesh;
+		this.config.animatedMesh.position.y -=
+			this.config[this.config.shapeType].y / 2;
 
-		this.config.animatedMesh = _ModelsManager.allMeshsAndDatas.character['Kimono_Female'].mesh
-		this.config.animatedMesh.position.y -= this.config[this.config.shapeType].y / 2
+		this.playerMesh.add(this.config.animatedMesh);
 
-		this.playerMesh.add(this.config.animatedMesh)
+		_Shoot.init(this.playerMesh, this.playerTurret, _scene, _physics);
+		_Engine.init(_ModelsManager);
 
-		_Shoot.init(this.playerMesh, this.playerTurret, _scene, _physics)
-		_Engine.init(_ModelsManager)
-
-		this.initiated = true
+		this.initiated = true;
 	},
 
 	addProjectilOrigineMesh: function () {
-		let geometry = new THREE.BoxGeometry(.5, .25, .5);
-		let material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF });
+		let geometry = new THREE.BoxGeometry(0.5, 0.25, 0.5);
+		let material = new THREE.MeshPhongMaterial({ color: 0xffffff });
 		this.projectilOrigine = new THREE.Mesh(geometry, material);
-		this.projectilOrigine.position.z = 5
-		this.projectilOrigine.position.y = -.5
-		this.playerTank.children[0].children[3].add(this.projectilOrigine)
-		console.log(this.projectilOrigine.position)
+		this.projectilOrigine.position.z = 5;
+		this.projectilOrigine.position.y = -0.5;
+		this.playerTank.children[0].children[3].add(this.projectilOrigine);
+		console.log(this.projectilOrigine.position);
 	},
 	// ---------------- ----------------
 	switchShootType: function () {
-		this.currentShootIndex = (this.currentShootIndex + 1) % this.shootTypes.length;
-		console.log('currentShootIndex', this.currentShootIndex)
-		this.switchShoot = false
+		this.currentShootIndex =
+			(this.currentShootIndex + 1) % this.shootTypes.length;
+		console.log("currentShootIndex", this.currentShootIndex);
+		this.switchShoot = false;
 	},
-	onDocumentMouseDown: function (event) { if (event.button === 0) _player.shoot = true; },
-	onDocumentMouseUp: function (event) { if (event.button === 0) _player.shoot = false; },
+	onDocumentMouseDown: function (event) {
+		if (event.button === 0) _player.shoot = true;
+	},
+	onDocumentMouseUp: function (event) {
+		if (event.button === 0) _player.shoot = false;
+	},
 	onDocumentKey: function (e) {
-		if (e.type === "keydown" || e.type === "keyup") _player.keyMap[e.code] = e.type === "keydown";
+		if (e.type === "keydown" || e.type === "keyup")
+			_player.keyMap[e.code] = e.type === "keydown";
 		if (_player.pointerLocked) {
 			_player.actions.moveForward = _player.keyMap["KeyW"];
 			_player.actions.moveBackward = _player.keyMap["KeyS"];
@@ -127,49 +144,92 @@ let _player = {
 				this.instructionsPanel.style.display = "none";
 				document.addEventListener("keydown", _player.onDocumentKey, false);
 				document.addEventListener("keyup", _player.onDocumentKey, false);
-				_scene.renderer.domElement.addEventListener("mousemove", _OrbitControls.onDocumentMouseMove, false);
-				_scene.renderer.domElement.addEventListener("wheel", _OrbitControls.onDocumentMouseWheel, false);
-				_scene.renderer.domElement.addEventListener("mousedown", _player.onDocumentMouseDown, false);
-				_scene.renderer.domElement.addEventListener("mouseup", _player.onDocumentMouseUp, false);
-
+				_scene.renderer.domElement.addEventListener(
+					"mousemove",
+					_OrbitControls.onDocumentMouseMove,
+					false
+				);
+				_scene.renderer.domElement.addEventListener(
+					"wheel",
+					_OrbitControls.onDocumentMouseWheel,
+					false
+				);
+				_scene.renderer.domElement.addEventListener(
+					"mousedown",
+					_player.onDocumentMouseDown,
+					false
+				);
+				_scene.renderer.domElement.addEventListener(
+					"mouseup",
+					_player.onDocumentMouseUp,
+					false
+				);
 			} else {
 				_player.pointerLocked = false;
 				_player.menuPanel.style.display = "block";
-				document.removeEventListener("keydown", _player.onDocumentKey, false);
+				document.removeEventListener(
+					"keydown",
+					_player.onDocumentKey,
+					false
+				);
 				document.removeEventListener("keyup", _player.onDocumentKey, false);
-				_scene.renderer.domElement.removeEventListener("mousedown", _player.onDocumentMouseDown, false);
-				_scene.renderer.domElement.removeEventListener("mouseup", _player.onDocumentMouseUp, false);
-				_scene.renderer.domElement.removeEventListener("mousemove", _OrbitControls.onDocumentMouseMove, false);
-				_scene.renderer.domElement.removeEventListener("wheel", _OrbitControls.onDocumentMouseWheel, false);
-				setTimeout(() => { _player.startButton.style.display = "block"; this.instructionsPanel.style.display = "block"; }, 1000);
+				_scene.renderer.domElement.removeEventListener(
+					"mousedown",
+					_player.onDocumentMouseDown,
+					false
+				);
+				_scene.renderer.domElement.removeEventListener(
+					"mouseup",
+					_player.onDocumentMouseUp,
+					false
+				);
+				_scene.renderer.domElement.removeEventListener(
+					"mousemove",
+					_OrbitControls.onDocumentMouseMove,
+					false
+				);
+				_scene.renderer.domElement.removeEventListener(
+					"wheel",
+					_OrbitControls.onDocumentMouseWheel,
+					false
+				);
+				setTimeout(() => {
+					_player.startButton.style.display = "block";
+					this.instructionsPanel.style.display = "block";
+				}, 1000);
 			}
 		});
 	},
 	panelManager: function () {
-		this.instructionsPanel = document.getElementById('instructions')
-		this.menuPanel = document.createElement('div')
-		this.startButton = document.createElement('div')
-		this.menuPanel.id = 'menuPanel'
-		this.startButton.id = 'startButton'
-		this.startButton.textContent = 'startButton'
-		this.menuPanel.appendChild(this.startButton)
-		document.body.appendChild(this.menuPanel)
-		this.startButton.addEventListener("click", () => { _scene.renderer.domElement.requestPointerLock(); }, false);
+		this.instructionsPanel = document.getElementById("instructions");
+		this.menuPanel = document.createElement("div");
+		this.startButton = document.createElement("div");
+		this.menuPanel.id = "menuPanel";
+		this.startButton.id = "startButton";
+		this.startButton.textContent = "startButton";
+		this.menuPanel.appendChild(this.startButton);
+		document.body.appendChild(this.menuPanel);
+		this.startButton.addEventListener(
+			"click",
+			() => {
+				_scene.renderer.domElement.requestPointerLock();
+			},
+			false
+		);
 	},
 	update: function (deltaTime, time) {
-		_Shoot.update(deltaTime, time)
-		this.checkActions(deltaTime, time)
+		_Shoot.update(deltaTime, time);
+		this.checkActions(deltaTime, time);
 	},
 	checkActions: function (deltaTime, time) {
-
-		let cube = this.config.mesh
+		let cube = this.config.mesh;
 		this.inputVelocity = new THREE.Vector3(0, 0, 0);
 
 		let transformAux1 = new Ammo.btTransform();
 		let quaternion = new THREE.Quaternion();
 		let position = new THREE.Vector3();
 
-		// is jumping 
+		// is jumping
 		// let max = (this.config[this.config.shapeType].y)
 		// if (cube.position.y > 0 + max) {
 		// 	this.actions.isjumping = true;
@@ -180,28 +240,38 @@ let _player = {
 		// }
 		// if (_player.actions.jump && !_player.actions.isjumping) this.jump(cube.userData.physicsBody);
 
-
 		// AVANT ARRIERE
-		let forward = new THREE.Vector3(0, 0, 1).applyQuaternion(cube.quaternion).normalize();
+		let forward = new THREE.Vector3(0, 0, 1)
+			.applyQuaternion(cube.quaternion)
+			.normalize();
 		if (this.actions.moveForward || this.actions.moveBackward) {
 			if (this.actions.moveForward) _Engine.powerUp();
 			else if (this.actions.moveBackward) _Engine.powerDown();
 		}
 
 		if (_Engine.status.power !== 0) {
-			this.inputVelocity.add(forward.multiplyScalar(_Engine.status.power * deltaTime));
+			this.inputVelocity.add(
+				forward.multiplyScalar(_Engine.status.power * deltaTime)
+			);
 		}
 
-
 		// TURN GAUCHE DROITE
-		let right = new THREE.Vector3(1, 0, 0).applyQuaternion(cube.quaternion).normalize();
-		if (this.actions.moveLeft) this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
-		if (this.actions.moveRight) this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
+		let right = new THREE.Vector3(1, 0, 0)
+			.applyQuaternion(cube.quaternion)
+			.normalize();
+		if (this.actions.moveLeft)
+			this.inputVelocity.add(right.multiplyScalar(-5 * deltaTime));
+		if (this.actions.moveRight)
+			this.inputVelocity.add(right.multiplyScalar(5 * deltaTime));
 
 		// Calculer les nouvelles rotations et position
 		if (this.actions.turnLeft || this.actions.turnRight) {
 			let sens = _Engine.status.power >= 0 ? 1 : -1; // invert directection while going back
-			let angle = (this.actions.turnLeft ? 1 : -1) * deltaTime * this.turnSpeed * sens;
+			let angle =
+				(this.actions.turnLeft ? 1 : -1) *
+				deltaTime *
+				this.turnSpeed *
+				sens;
 			let axis = new THREE.Vector3(0, 1, 0);
 			quaternion.setFromAxisAngle(axis, angle);
 			cube.quaternion.multiplyQuaternions(quaternion, cube.quaternion);
@@ -211,12 +281,10 @@ let _player = {
 		// ----------------
 		// ANIMATIONS
 		// ----------------
-		this.animateChar()
+		this.animateChar();
 		// ----------------
 		// END ANIMATIONS
 		// ----------------
-
-
 
 		// Mettre à jour la transformation du corps physique
 		if (cube.userData.physicsBody) {
@@ -230,48 +298,60 @@ let _player = {
 			);
 
 			let btQuat = transformAux1.getRotation();
-			btQuat.setValue(cube.quaternion.x, cube.quaternion.y, cube.quaternion.z, cube.quaternion.w);
+			btQuat.setValue(
+				cube.quaternion.x,
+				cube.quaternion.y,
+				cube.quaternion.z,
+				cube.quaternion.w
+			);
 
-			transformAux1.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
+			transformAux1.setOrigin(
+				new Ammo.btVector3(position.x, position.y, position.z)
+			);
 			transformAux1.setRotation(btQuat);
 
 			body.setWorldTransform(transformAux1);
 			body.activate();
-
 
 			if (this.shoot) {
 				let done = _Shoot.shoot(this.shootTypes[this.currentShootIndex]);
 			}
 			if (this.switchShoot) {
 				_player.switchShootType();
-				this.switchShoot = false
+				this.switchShoot = false;
 			}
 		}
-		_Engine.update()
+		_Engine.update();
 	},
 	jump: function () {
-		if (this.actions && this.actions.jump) { // Simple vérification pour permettre de sauter seulement si on est proche du sol
-			let cube = this.config.mesh
+		if (this.actions && this.actions.jump) {
+			// Simple vérification pour permettre de sauter seulement si on est proche du sol
+			let cube = this.config.mesh;
 			let jumpForce = new Ammo.btVector3(0, 5, 0); // Modifier la force du saut selon besoin
 			cube.userData.physicsBody.applyCentralImpulse(jumpForce);
-			this.actions.jump = false
-			this.actions.isjumping = true
+			this.actions.jump = false;
+			this.actions.isjumping = true;
 		}
-
 	},
 	animateChar: function () {
-		let char = this._ModelsManager.allMeshsAndDatas.character['Kimono_Female']
+		let char =
+			this._ModelsManager.allMeshsAndDatas.character["Kimono_Female"];
 		// ----------------
 		// ANIMATIONS
 		// ----------------
-		if (_Engine.status.currentGear === 0) { char.changeAnimation('Walk') }
-		else if (_Engine.status.currentGear === 2) { char.changeAnimation('Idle') }// position a l'arret
-		else if (_Engine.status.currentGear === 3) { char.changeAnimation('Walk') }
-		else if (_Engine.status.currentGear === 5) { char.changeAnimation('Run') }
+		if (_Engine.status.currentGear === 0) {
+			char.changeAnimation("Walk");
+		} else if (_Engine.status.currentGear === 2) {
+			char.changeAnimation("Idle");
+		} // position a l'arret
+		else if (_Engine.status.currentGear === 3) {
+			char.changeAnimation("Walk");
+		} else if (_Engine.status.currentGear === 5) {
+			char.changeAnimation("Run");
+		}
 
 		if (this.shoot) {
-			char.changeAnimation('Punch')
-
+			char.changeAnimation("Punch");
 
 			// wait until go old animations
 		}
@@ -300,15 +380,10 @@ let _player = {
 		// END ANIMATIONS
 		// ----------------
 	},
-	delayedAction: () => {
-
-	}
-}
+	delayedAction: () => {},
+};
 let animateChar = {
 	datas: {},
-	init: function () {
-
-	}
-
-}
-export { _player }
+	init: function () {},
+};
+export { _player };

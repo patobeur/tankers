@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 	<head>
 		<title>three.js physics</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-		<link rel="stylesheet" href="assets/css/main.css">
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
 	</head>
 
 	<body>
@@ -20,16 +21,15 @@
 			Left mouse clic to fire an ammo !<br />
 		</div>
 		<script src="./node_modules_min/three/examples/jsm/libs/ammo.wasm.js"></script>
-		
+
 		<script type="importmap">
-		{
-          "imports": {
-            "three": "/tankers/node_modules_min/three/build/three.module.js",
-            "three/addons/": "/tankers/node_modules_min/three/examples/jsm/"
-          }
-        }
-      	</script>
+			{
+				"imports": {
+					"three": "/node_modules_min/three/build/three.module.js",
+					"three/addons/": "/node_modules_min/three/examples/jsm/"
+				}
+			}
+		</script>
 		<script type="module" src="js/index.js"></script>
 	</body>
-
 </html>
