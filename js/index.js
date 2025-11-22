@@ -1,6 +1,6 @@
 "use strict";
 import * as THREE from "three";
-import { _scene } from "/tankers/tankers/js/scene.js";
+import { _scene } from "/tankers/js/scene.js";
 import { _physics } from "/tankers/js/physics.js";
 import { _player } from "/tankers/js/player.js";
 import { _GLTFLoader, _TextureLoader } from "/tankers/js/loaders.js";
