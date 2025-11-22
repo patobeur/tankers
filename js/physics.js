@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { _GLTFLoader, _TextureLoader } from "/js/loaders.js";
+import { _GLTFLoader, _TextureLoader } from "/tankers/js/loaders.js";
 
 const DEFAULT_GROUP = 1 << 0; // 1
 const DEFAULT_MASK = 0xffff; // Collide with everything
